@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Benchmark prototype visual comparison</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;padding:18px;background:#18231f;color:#fff;font:13px -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}.labels{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:8px}.compare{display:grid;grid-template-columns:1fr 1fr;gap:16px}.frame{position:relative;width:100%;aspect-ratio:1440/1024;overflow:hidden;background:#fff}.frame img{display:block;width:100%;height:100%;object-fit:fill}.frame iframe{width:1440px;height:1024px;border:0;transform:scale(.482);transform-origin:0 0}
+  </style>
+</head>
+<body>
+  <div class="labels"><strong>Source visual · 1440 × 1024</strong><strong>Implementation · 1440 × 1024</strong></div>
+  <div class="compare"><div class="frame"><img src="/benchmark-source.png" alt="Selected source visual" /></div><div class="frame"><iframe src="/" title="Rendered implementation"></iframe></div></div>
+</body>
+</html>

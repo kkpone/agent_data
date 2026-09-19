@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>企业确认卡基础字段 · 设计 QA</title>
+    <style>
+      *{box-sizing:border-box}body{margin:0;background:#eef3f0;color:#1f2c26;font-family:"PingFang SC","Microsoft YaHei",sans-serif}.board{padding:22px}.head{display:flex;align-items:end;justify-content:space-between;margin-bottom:14px}.head h1{margin:0 0 4px;font-size:21px}.head p{margin:0;color:#74827b;font-size:11px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.panel{overflow:hidden;border:1px solid #dce5e1;border-radius:12px;background:#fff;box-shadow:0 10px 30px rgba(42,62,53,.07)}.label{display:flex;justify-content:space-between;padding:10px 12px;border-bottom:1px solid #e6ece9;font-size:11px;font-weight:700}.label span{font-weight:400;color:#849089}.full{height:332px;overflow:hidden}.full img{display:block;width:100%;height:auto}.focus-grid{margin-top:14px}.focus{height:355px;overflow:hidden;background:#fbfdfc}.focus img{display:block;width:150%;max-width:none;transform:translate(-15%,-11%)}
+    </style>
+  </head>
+  <body>
+    <main class="board">
+      <header class="head"><div><h1>企业确认卡 · 基础信息字段</h1><p>同一查询状态、同一 1280 × 720 视口；保留页面结构，仅重构确认卡信息。</p></div><p>设计 QA · v7</p></header>
+      <section class="grid">
+        <article class="panel"><div class="label">修改前 <span>企业摘要与校验标签</span></div><div class="full"><img src="/assets/confirm-before-reference.png" alt="修改前企业确认卡" /></div></article>
+        <article class="panel"><div class="label">修改后 <span>五项明确基础字段</span></div><div class="full"><img src="/assets/confirm-basic-fields-implementation.jpg" alt="修改后企业确认卡" /></div></article>
+      </section>
+      <section class="grid focus-grid">
+        <article class="panel"><div class="label">局部对比 · 修改前 <span>字段混排</span></div><div class="focus"><img src="/assets/confirm-before-reference.png" alt="修改前局部" /></div></article>
+        <article class="panel"><div class="label">局部对比 · 修改后 <span>企业名称／编码／行业／上市地点／证券代码</span></div><div class="focus"><img src="/assets/confirm-basic-fields-implementation.jpg" alt="修改后局部" /></div></article>
+      </section>
+    </main>
+  </body>
+</html>
