@@ -13,6 +13,7 @@ import { chatInsights, dimensionCatalog, getFieldRecord, sourceFiles, totalField
 import { esgPerformanceCatalog, esgYears } from "./esgData";
 
 const appRouteUrl = (route) => `${import.meta.env.BASE_URL}#/${route.replace(/^\//, "")}`;
+const assetUrl = (path) => `${import.meta.env.BASE_URL}${path.replace(/^\//, "")}`;
 
 const projects = [
   ["2024年企业碳核算", "组织"], ["2025年碳阻迹研究", "组织"],
@@ -53,7 +54,7 @@ function Sidebar({ view, onNavigate }) {
     [IconFootsteps, "产品碳足迹"], [IconFileDescription, "企业碳核算"], [IconWorld, "CBAM"],
   ];
   return <aside className="sidebar">
-    <div className="brand-row"><div className="brand-crop" aria-label="Carbon Agent"><img src="/assets/current-carbon-agent.png" alt="Carbon Agent" /></div><button className="icon-button" aria-label="收起侧栏"><IconLayoutSidebarLeftCollapse size={19} /></button></div>
+    <div className="brand-row"><div className="brand-crop" aria-label="Carbon Agent"><img src={assetUrl("assets/current-carbon-agent.png")} alt="Carbon Agent" /></div><button className="icon-button" aria-label="收起侧栏"><IconLayoutSidebarLeftCollapse size={19} /></button></div>
     <button className={`new-chat ${view === "chat" ? "selected" : ""}`} onClick={() => onNavigate("chat")}><IconMessagePlus size={18} /> 新对话</button>
     <nav className="primary-nav">
       {productNav.map(([Icon, label]) => <button key={label}><Icon size={19} /><span>{label}</span><IconChevronRight size={16} /></button>)}
@@ -634,12 +635,12 @@ const productFootprints = [
   { image: "/assets/product-charger.png", name: "直流双枪充电终端", model: "HN-EVDC-240", footprint: "286.40 kgCO₂e/台", unit: "1 台 240kW 充电终端", period: "2024.01.01–2024.12.31", boundary: "全生命周期" },
 ];
 
-function ProductFootprintPanel() {
+function ProductFootprintPanel({ companyName = enterpriseProfile.name }) {
   return <div className="intel-dimension-body product-footprint-body">
     <div className="product-footprint-toolbar"><div><strong>已披露核算产品</strong><span>共 {productFootprints.length} 个产品 · 数据来自企业产品碳足迹报告与核算声明</span></div><button>全部产品 <IconChevronDown size={14}/></button></div>
     <section className="product-footprint-grid">{productFootprints.map((product) => <article className="product-footprint-card" key={product.model}>
-      <div className="product-footprint-image"><img src={product.image} alt={product.name}/></div>
-      <div className="product-footprint-info"><span>华能国际电力股份有限公司</span><h3>{product.name}</h3><em>{product.model}</em><dl><div><dt>碳足迹</dt><dd>{product.footprint}</dd></div><div><dt>功能单位</dt><dd>{product.unit}</dd></div><div><dt>核算周期</dt><dd>{product.period}</dd></div></dl><footer><b><IconLeaf size={13}/> 已完成产品碳核算</b><small>{product.boundary}</small></footer></div>
+      <div className="product-footprint-image"><img src={assetUrl(product.image)} alt={product.name}/></div>
+      <div className="product-footprint-info"><span>{companyName}</span><h3>{product.name}</h3><em>{product.model}</em><dl><div><dt>碳足迹</dt><dd>{product.footprint}</dd></div><div><dt>功能单位</dt><dd>{product.unit}</dd></div><div><dt>核算周期</dt><dd>{product.period}</dd></div></dl><footer><b><IconLeaf size={13}/> 已完成产品碳核算</b><small>{product.boundary}</small></footer></div>
     </article>)}</section>
   </div>;
 }
@@ -674,33 +675,41 @@ const enterpriseSuppliers = [
   ["中国太平洋财产保险股份有限公司深圳分公司", ["在营"]],
 ];
 
-function EnterpriseProfilePanel() {
+function EnterpriseProfilePanel({ profile = enterpriseProfile }) {
   return <section className="enterprise-profile">
     <div className="enterprise-profile-summary">
       <dl>
-        <div><dt>企业名称</dt><dd>{enterpriseProfile.name}</dd></div><div><dt>统一社会信用代码</dt><dd>{enterpriseProfile.creditCode}</dd></div><div><dt>联系方式</dt><dd className="profile-link">{enterpriseProfile.phone} <small>更多 2</small></dd></div>
-        <div><dt>法定代表人</dt><dd>{enterpriseProfile.legalRepresentative}</dd></div><div><dt>登记状态</dt><dd>{enterpriseProfile.status}</dd></div><div><dt>成立日期</dt><dd>{enterpriseProfile.founded}</dd></div>
-        <div><dt>企业类型</dt><dd>{enterpriseProfile.type}</dd></div><div><dt>注册资本</dt><dd>{enterpriseProfile.capital}</dd></div><div><dt>营业期限</dt><dd>{enterpriseProfile.term}</dd></div>
-        <div><dt>曾用名</dt><dd>{enterpriseProfile.formerName}</dd></div><div><dt>所属行业</dt><dd>{enterpriseProfile.industry}</dd></div><div><dt>所属地区</dt><dd>{enterpriseProfile.region}</dd></div>
-        <div className="profile-address"><dt>注册地址</dt><dd>{enterpriseProfile.address}</dd></div>
+        <div><dt>企业名称</dt><dd>{profile.name}</dd></div><div><dt>统一社会信用代码</dt><dd>{profile.creditCode}</dd></div><div><dt>联系方式</dt><dd className="profile-link">{profile.phone} <small>更多 2</small></dd></div>
+        <div><dt>法定代表人</dt><dd>{profile.legalRepresentative}</dd></div><div><dt>登记状态</dt><dd>{profile.status}</dd></div><div><dt>成立日期</dt><dd>{profile.founded}</dd></div>
+        <div><dt>企业类型</dt><dd>{profile.type}</dd></div><div><dt>注册资本</dt><dd>{profile.capital}</dd></div><div><dt>营业期限</dt><dd>{profile.term}</dd></div>
+        <div><dt>曾用名</dt><dd>{profile.formerName}</dd></div><div><dt>所属行业</dt><dd>{profile.industry}</dd></div><div><dt>所属地区</dt><dd>{profile.region}</dd></div>
+        <div className="profile-address"><dt>注册地址</dt><dd>{profile.address}</dd></div>
       </dl>
-      <div className="profile-scope"><span>经营范围</span><p>{enterpriseProfile.scope}</p></div>
+      <div className="profile-scope"><span>经营范围</span><p>{profile.scope}</p></div>
     </div>
   </section>;
 }
 
 function EnterpriseIntelView() {
   const [dimension, setDimension] = useState("carbon");
+  const routeQuery = new URLSearchParams(window.location.hash.split("?")[1] || window.location.search.slice(1));
+  const company = companies.find((item) => item.id === routeQuery.get("company")) || companies[0];
+  const profile = company.id === "huaneng" ? enterpriseProfile : {
+    name: company.name, creditCode: company.creditCode || "—", legalRepresentative: company.legalPerson || "—", status: company.regStatus || "存续",
+    founded: company.established || "—", type: company.companyType || "股份有限公司", capital: "以工商登记为准", term: "长期",
+    formerName: "—", industry: company.industry, region: company.city, address: `${company.city}企业注册地址`, phone: "公开联系方式待补充",
+    scope: `${company.industry}相关产品与服务的研发、生产、销售及配套经营活动；具体经营项目以企业工商登记及公开披露为准。`,
+  };
   const dimensionMeta = {
     carbon: ["CARBON", "碳排放", "查看企业温室气体排放、能源结构、减排目标及历史趋势。"],
     esg: ["ESG", "ESG 表现", "查看环境、社会和治理表现，以及报告、评级与关键议题。"],
     product: ["PRODUCT CARBON FOOTPRINT", "产品碳足迹", "查看企业已披露核算产品的碳足迹、功能单位、核算周期与边界。"],
   }[dimension];
   return <main className="enterprise-intel-shell">
-    <div className="intel-breadcrumb intel-breadcrumb-top"><button onClick={() => window.location.assign(appRouteUrl("admin"))}>企业碳数据</button><IconChevronRight size={13}/><button onClick={() => window.location.assign(appRouteUrl("admin/list"))}>企业列表</button><IconChevronRight size={13}/><span>华能国际</span><IconChevronRight size={13}/><strong>{dimensionMeta[1]}</strong></div>
-    <section className="intel-company-hero"><div className="intel-company-mark">华能</div><div className="intel-company-name"><div><h1>{enterpriseProfile.name}</h1></div><div><span>在营</span><span>A股</span><span>港股</span><span>国有企业</span><span>发债企业</span><span>大型企业</span></div></div></section>
-    <EnterpriseProfilePanel/>
-    <section className="intel-content"><aside className="intel-side-nav"><span>数据维度</span><button className={dimension === "carbon" ? "active" : ""} onClick={() => setDimension("carbon")}><IconCloud size={18}/><div><strong>碳排放</strong><small>核算、趋势与目标</small></div><IconChevronRight size={15}/></button><button className={dimension === "esg" ? "active" : ""} onClick={() => setDimension("esg")}><IconScale size={18}/><div><strong>ESG</strong><small>评级与三大支柱</small></div><IconChevronRight size={15}/></button><button className={dimension === "product" ? "active" : ""} onClick={() => setDimension("product")}><IconFootsteps size={18}/><div><strong>产品碳足迹</strong><small>产品核算与披露</small></div><IconChevronRight size={15}/></button></aside><section className="intel-main-panel"><header className="intel-dimension-header"><div><span>数据维度 / {dimensionMeta[0]}</span><h2>{dimensionMeta[1]}</h2><p>{dimensionMeta[2]}</p></div><div><button><IconDownload size={16}/> 导出</button><button className="primary"><IconSparkles size={16}/> 智能解读</button></div></header>{dimension === "carbon" ? <CarbonDimensionPanel/> : dimension === "esg" ? <EsgDimensionPanel/> : <ProductFootprintPanel/>}</section></section>
+    <div className="intel-breadcrumb intel-breadcrumb-top"><button onClick={() => window.location.assign(appRouteUrl("admin"))}>企业碳数据</button><IconChevronRight size={13}/><button onClick={() => window.location.assign(appRouteUrl("admin/list"))}>企业列表</button><IconChevronRight size={13}/><span>{company.short}</span><IconChevronRight size={13}/><strong>{dimensionMeta[1]}</strong></div>
+    <section className="intel-company-hero"><div className="intel-company-mark">{company.short.slice(0,2)}</div><div className="intel-company-name"><div><h1>{company.name}</h1></div><div><span>{company.regStatus || "存续"}</span>{(company.tags || [company.industry, company.city]).map((tag) => <span key={tag}>{tag}</span>)}</div></div></section>
+    <EnterpriseProfilePanel profile={profile}/>
+    <section className="intel-content"><aside className="intel-side-nav"><span>数据维度</span><button className={dimension === "carbon" ? "active" : ""} onClick={() => setDimension("carbon")}><IconCloud size={18}/><div><strong>碳排放</strong><small>核算、趋势与目标</small></div><IconChevronRight size={15}/></button><button className={dimension === "esg" ? "active" : ""} onClick={() => setDimension("esg")}><IconScale size={18}/><div><strong>ESG</strong><small>评级与三大支柱</small></div><IconChevronRight size={15}/></button><button className={dimension === "product" ? "active" : ""} onClick={() => setDimension("product")}><IconFootsteps size={18}/><div><strong>产品碳足迹</strong><small>产品核算与披露</small></div><IconChevronRight size={15}/></button></aside><section className="intel-main-panel"><header className="intel-dimension-header"><div><span>数据维度 / {dimensionMeta[0]}</span><h2>{dimensionMeta[1]}</h2><p>{dimensionMeta[2]}</p></div><div><button><IconDownload size={16}/> 导出</button><button className="primary"><IconSparkles size={16}/> 智能解读</button></div></header>{dimension === "carbon" ? <CarbonDimensionPanel/> : dimension === "esg" ? <EsgDimensionPanel/> : <ProductFootprintPanel companyName={company.name}/>}</section></section>
   </main>;
 }
 
@@ -797,7 +806,7 @@ function AdminFieldManagement() {
 function AdminApp() {
   const [page, setPage] = useState(window.location.hash === "#list" ? "list" : "overview");
   const [selectedCompany, setSelectedCompany] = useState(companies[0]);
-  function openDetail(company) { if (company.id === "huaneng") { window.location.assign(appRouteUrl("enterprise?from=admin")); return; } setSelectedCompany(company); setPage("detail"); }
+  function openDetail(company) { window.location.assign(appRouteUrl(`enterprise?from=admin&company=${company.id}`)); }
   return <div className="admin-shell"><AdminSidebar page={page} onNavigate={setPage} /><section className="admin-main">{page === "overview" && <AdminOverview onOpenList={() => setPage("list")} onOpenDetail={openDetail} />}{page === "list" && <AdminCompanyList onOpenDetail={openDetail} />}{page === "fields" && <AdminFieldManagement />}{page === "detail" && <CompanyDetailView company={selectedCompany} onBack={() => setPage("list")} />}</section></div>;
 }
 
@@ -812,12 +821,7 @@ export function App() {
   const [followedIds, setFollowedIds] = useState(["byd", "longi", "huaneng", "midea", "baosteel", "zijin"]);
   function navigate(next) { setView(next); }
   function openDetail(company = companies[0]) {
-    if (company.id === "huaneng") {
-      window.location.assign(appRouteUrl("enterprise?from=followed"));
-      return;
-    }
-    setSelectedCompany(company);
-    setView("detail");
+    window.location.assign(appRouteUrl(`enterprise?from=followed&company=${company.id}`));
   }
   function setCatlFollowed(next) { setFollowedIds((ids) => next ? [...new Set([...ids, "catl"])] : ids.filter((id) => id !== "catl")); }
   const followedCompanies = companies.filter((company) => followedIds.includes(company.id));
