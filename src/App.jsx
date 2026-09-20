@@ -12,6 +12,8 @@ import {
 import { chatInsights, dimensionCatalog, getFieldRecord, sourceFiles, totalFieldCount } from "./carbonData";
 import { esgPerformanceCatalog, esgYears } from "./esgData";
 
+const appRouteUrl = (route) => `${import.meta.env.BASE_URL}#/${route.replace(/^\//, "")}`;
+
 const projects = [
   ["2024年企业碳核算", "组织"], ["2025年碳阻迹研究", "组织"],
   ["宁德时代碳情报", "企业"], ["2023年碳阻迹研究", "组织"],
@@ -695,7 +697,7 @@ function EnterpriseIntelView() {
     product: ["PRODUCT CARBON FOOTPRINT", "产品碳足迹", "查看企业已披露核算产品的碳足迹、功能单位、核算周期与边界。"],
   }[dimension];
   return <main className="enterprise-intel-shell">
-    <div className="intel-breadcrumb intel-breadcrumb-top"><button onClick={() => window.location.assign("/admin")}>企业碳数据</button><IconChevronRight size={13}/><button onClick={() => window.location.assign("/admin#list")}>企业列表</button><IconChevronRight size={13}/><span>华能国际</span><IconChevronRight size={13}/><strong>{dimensionMeta[1]}</strong></div>
+    <div className="intel-breadcrumb intel-breadcrumb-top"><button onClick={() => window.location.assign(appRouteUrl("admin"))}>企业碳数据</button><IconChevronRight size={13}/><button onClick={() => window.location.assign(appRouteUrl("admin/list"))}>企业列表</button><IconChevronRight size={13}/><span>华能国际</span><IconChevronRight size={13}/><strong>{dimensionMeta[1]}</strong></div>
     <section className="intel-company-hero"><div className="intel-company-mark">华能</div><div className="intel-company-name"><div><h1>{enterpriseProfile.name}</h1></div><div><span>在营</span><span>A股</span><span>港股</span><span>国有企业</span><span>发债企业</span><span>大型企业</span></div></div></section>
     <EnterpriseProfilePanel/>
     <section className="intel-content"><aside className="intel-side-nav"><span>数据维度</span><button className={dimension === "carbon" ? "active" : ""} onClick={() => setDimension("carbon")}><IconCloud size={18}/><div><strong>碳排放</strong><small>核算、趋势与目标</small></div><IconChevronRight size={15}/></button><button className={dimension === "esg" ? "active" : ""} onClick={() => setDimension("esg")}><IconScale size={18}/><div><strong>ESG</strong><small>评级与三大支柱</small></div><IconChevronRight size={15}/></button><button className={dimension === "product" ? "active" : ""} onClick={() => setDimension("product")}><IconFootsteps size={18}/><div><strong>产品碳足迹</strong><small>产品核算与披露</small></div><IconChevronRight size={15}/></button></aside><section className="intel-main-panel"><header className="intel-dimension-header"><div><span>数据维度 / {dimensionMeta[0]}</span><h2>{dimensionMeta[1]}</h2><p>{dimensionMeta[2]}</p></div><div><button><IconDownload size={16}/> 导出</button><button className="primary"><IconSparkles size={16}/> 智能解读</button></div></header>{dimension === "carbon" ? <CarbonDimensionPanel/> : dimension === "esg" ? <EsgDimensionPanel/> : <ProductFootprintPanel/>}</section></section>
@@ -795,20 +797,23 @@ function AdminFieldManagement() {
 function AdminApp() {
   const [page, setPage] = useState(window.location.hash === "#list" ? "list" : "overview");
   const [selectedCompany, setSelectedCompany] = useState(companies[0]);
-  function openDetail(company) { if (company.id === "huaneng") { window.location.assign("/enterprise?from=admin"); return; } setSelectedCompany(company); setPage("detail"); }
+  function openDetail(company) { if (company.id === "huaneng") { window.location.assign(appRouteUrl("enterprise?from=admin")); return; } setSelectedCompany(company); setPage("detail"); }
   return <div className="admin-shell"><AdminSidebar page={page} onNavigate={setPage} /><section className="admin-main">{page === "overview" && <AdminOverview onOpenList={() => setPage("list")} onOpenDetail={openDetail} />}{page === "list" && <AdminCompanyList onOpenDetail={openDetail} />}{page === "fields" && <AdminFieldManagement />}{page === "detail" && <CompanyDetailView company={selectedCompany} onBack={() => setPage("list")} />}</section></div>;
 }
 
 export function App() {
-  if (window.location.pathname.startsWith("/enterprise")) return <EnterpriseIntelView />;
-  if (window.location.pathname.startsWith("/admin")) return <AdminApp />;
+  const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+  const pathnameRoute = window.location.pathname.replace(basePath, "") || "/";
+  const routePath = window.location.hash.startsWith("#/") ? window.location.hash.slice(1).split("?")[0] : pathnameRoute;
+  if (routePath.startsWith("/enterprise")) return <EnterpriseIntelView />;
+  if (routePath.startsWith("/admin")) return <AdminApp />;
   const [view, setView] = useState("chat");
   const [selectedCompany, setSelectedCompany] = useState(companies[0]);
   const [followedIds, setFollowedIds] = useState(["byd", "longi", "huaneng", "midea", "baosteel", "zijin"]);
   function navigate(next) { setView(next); }
   function openDetail(company = companies[0]) {
     if (company.id === "huaneng") {
-      window.location.assign("/enterprise?from=followed");
+      window.location.assign(appRouteUrl("enterprise?from=followed"));
       return;
     }
     setSelectedCompany(company);
