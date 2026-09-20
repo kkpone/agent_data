@@ -839,7 +839,11 @@ export function App() {
   const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
   const pathnameRoute = window.location.pathname.replace(basePath, "") || "/";
   const routePath = window.location.hash.startsWith("#/") ? window.location.hash.slice(1).split("?")[0] : pathnameRoute;
-  if (routePath.startsWith("/enterprise")) return <EnterpriseIntelView />;
+  if (routePath.startsWith("/enterprise")) {
+    const routeQuery = new URLSearchParams(window.location.hash.split("?")[1] || window.location.search.slice(1));
+    if (routeQuery.get("from") === "followed") return <div className="app-shell knowledge-app followed-enterprise-archive"><Sidebar view="companies" onNavigate={(next) => navigateAppRoute(next === "companies" ? "followed" : "")} /><EnterpriseIntelView /></div>;
+    return <EnterpriseIntelView />;
+  }
   if (routePath.startsWith("/admin")) return <AdminApp />;
   const [view, setView] = useState(routePath.startsWith("/followed") ? "companies" : "chat");
   const [selectedCompany, setSelectedCompany] = useState(companies[0]);
