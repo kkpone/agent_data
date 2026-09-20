@@ -563,7 +563,7 @@ function CarbonMetricTable() {
   const [scope3Expanded, setScope3Expanded] = useState(false);
   const years = ["2025年", "2024年", "2023年", "2022年", "2021年"];
   function openDetail(row, type = "trend") { setDetail({ row, type }); }
-  return <section className="intel-card intel-data-table carbon-metric-table"><header><div><strong>碳排放指标</strong><span>绝对排放量与单位营收排放强度</span></div><button><IconDownload size={14}/> 导出数据</button></header>
+  return <section className="intel-card intel-data-table carbon-metric-table"><header><div><strong>碳排放指标</strong><span>绝对排放量与单位营收排放强度</span></div></header>
     <div className="carbon-table-scroll"><div className="carbon-table-head"><span>指标</span><span>单位</span>{years.map((year) => <span key={year}>{year}</span>)}</div>
       {carbonMetricGroups.map((group) => <div className="carbon-table-group" key={group.name}><div className="carbon-group-title">{group.name}</div>{group.rows.map((row) => <Fragment key={row[0]}><div className={`carbon-table-row ${row[0] === "碳排放量（范围三）" ? "scope3-parent-row" : ""}`}><span><button className="metric-name-button" onClick={() => openDetail(row)}>{row[0]}</button>{isQuantitativeMetric(row) && <button className="trend-entry" aria-label={`查看${row[0]}趋势`} onClick={() => openDetail(row)}><IconChartBar size={15}/></button>}{row[0] === "碳排放量（范围三）" && <button className={`scope3-toggle ${scope3Expanded ? "expanded" : ""}`} aria-label={scope3Expanded ? "收起范围三的15个类别" : "展开范围三的15个类别"} aria-expanded={scope3Expanded} onClick={() => setScope3Expanded(!scope3Expanded)}><IconChevronDown size={14}/></button>}</span><span>{row[1]}</span>{row.slice(2).map((value, index) => <span className={value === "—" ? "empty" : ""} key={`${value}-${index}`}>{value}{value !== "—" && index < 4 && group.name === "碳排放量" && <sup>*</sup>}</span>)}</div>{row[0] === "碳排放量（范围三）" && scope3Expanded && <div className="scope3-category-block">{scope3CategoryRows.map((categoryRow) => <div className="carbon-table-row scope3-category-row" key={categoryRow[0]}><span><button className="metric-name-button" onClick={() => openDetail(categoryRow)}>{categoryRow[0]}</button>{isQuantitativeMetric(categoryRow) && <button className="trend-entry" aria-label={`查看${categoryRow[0]}趋势`} onClick={() => openDetail(categoryRow)}><IconChartBar size={15}/></button>}</span><span>{categoryRow[1]}</span>{categoryRow.slice(2).map((value, index) => <span className={value === "—" ? "empty" : ""} key={`${categoryRow[0]}-${index}`}>{value}</span>)}</div>)}</div>}</Fragment>)}</div>)}
     </div>
@@ -695,8 +695,8 @@ function EnterpriseProfilePanel({ profile = enterpriseProfile }) {
 }
 
 function EnterpriseIntelView() {
-  const [dimension, setDimension] = useState("carbon");
   const routeQuery = new URLSearchParams(window.location.hash.split("?")[1] || window.location.search.slice(1));
+  const fromFollowed = routeQuery.get("from") === "followed";
   const company = companies.find((item) => item.id === routeQuery.get("company")) || companies[0];
   const profile = company.id === "huaneng" ? enterpriseProfile : {
     name: company.name, creditCode: company.creditCode || "—", legalRepresentative: company.legalPerson || "—", status: company.regStatus || "存续",
@@ -704,16 +704,12 @@ function EnterpriseIntelView() {
     formerName: "—", industry: company.industry, region: company.city, address: `${company.city}企业注册地址`, phone: "公开联系方式待补充",
     scope: `${company.industry}相关产品与服务的研发、生产、销售及配套经营活动；具体经营项目以企业工商登记及公开披露为准。`,
   };
-  const dimensionMeta = {
-    carbon: ["CARBON", "碳排放", "查看企业温室气体排放、能源结构、减排目标及历史趋势。"],
-    esg: ["ESG", "ESG 表现", "查看环境、社会和治理表现，以及报告、评级与关键议题。"],
-    product: ["PRODUCT CARBON FOOTPRINT", "产品碳足迹", "查看企业已披露核算产品的碳足迹、功能单位、核算周期与边界。"],
-  }[dimension];
+  const dimensionMeta = ["CARBON", "碳排放", "查看企业温室气体排放、能源结构、减排目标及历史趋势。"];
   return <main className="enterprise-intel-shell">
-    <div className="intel-breadcrumb intel-breadcrumb-top"><button onClick={() => navigateAppRoute("admin")}>企业碳数据</button><IconChevronRight size={13}/><button onClick={() => navigateAppRoute("admin/list")}>企业列表</button><IconChevronRight size={13}/><span>{company.short}</span><IconChevronRight size={13}/><strong>{dimensionMeta[1]}</strong></div>
+    <div className="intel-breadcrumb intel-breadcrumb-top">{fromFollowed ? <><button onClick={() => navigateAppRoute("followed")}><IconArrowLeft size={14}/>返回关注企业</button><IconChevronRight size={13}/></> : <><button onClick={() => navigateAppRoute("admin")}>企业碳数据</button><IconChevronRight size={13}/><button onClick={() => navigateAppRoute("admin/list")}>企业列表</button><IconChevronRight size={13}/></>}<span>{company.short}</span><IconChevronRight size={13}/><strong>{dimensionMeta[1]}</strong></div>
     <section className="intel-company-hero"><div className="intel-company-mark">{company.short.slice(0,2)}</div><div className="intel-company-name"><div><h1>{company.name}</h1></div><div><span>{company.regStatus || "存续"}</span>{(company.tags || [company.industry, company.city]).map((tag) => <span key={tag}>{tag}</span>)}</div></div></section>
     <EnterpriseProfilePanel profile={profile}/>
-    <section className="intel-content"><aside className="intel-side-nav"><span>数据维度</span><button className={dimension === "carbon" ? "active" : ""} onClick={() => setDimension("carbon")}><IconCloud size={18}/><div><strong>碳排放</strong><small>核算、趋势与目标</small></div><IconChevronRight size={15}/></button><button className={dimension === "esg" ? "active" : ""} onClick={() => setDimension("esg")}><IconScale size={18}/><div><strong>ESG</strong><small>评级与三大支柱</small></div><IconChevronRight size={15}/></button><button className={dimension === "product" ? "active" : ""} onClick={() => setDimension("product")}><IconFootsteps size={18}/><div><strong>产品碳足迹</strong><small>产品核算与披露</small></div><IconChevronRight size={15}/></button></aside><section className="intel-main-panel"><header className="intel-dimension-header"><div><span>数据维度 / {dimensionMeta[0]}</span><h2>{dimensionMeta[1]}</h2><p>{dimensionMeta[2]}</p></div><div><button><IconDownload size={16}/> 导出</button><button className="primary"><IconSparkles size={16}/> 智能解读</button></div></header>{dimension === "carbon" ? <CarbonDimensionPanel/> : dimension === "esg" ? <EsgDimensionPanel/> : <ProductFootprintPanel companyName={company.name}/>}</section></section>
+    <section className="intel-content"><aside className="intel-side-nav"><span>数据维度</span><button className="active"><IconCloud size={18}/><div><strong>碳排放</strong><small>核算、趋势与目标</small></div><IconChevronRight size={15}/></button></aside><section className="intel-main-panel"><header className="intel-dimension-header"><div><span>数据维度 / {dimensionMeta[0]}</span><h2>{dimensionMeta[1]}</h2><p>{dimensionMeta[2]}</p></div></header><CarbonDimensionPanel/></section></section>
   </main>;
 }
 
@@ -820,7 +816,7 @@ export function App() {
   const routePath = window.location.hash.startsWith("#/") ? window.location.hash.slice(1).split("?")[0] : pathnameRoute;
   if (routePath.startsWith("/enterprise")) return <EnterpriseIntelView />;
   if (routePath.startsWith("/admin")) return <AdminApp />;
-  const [view, setView] = useState("chat");
+  const [view, setView] = useState(routePath.startsWith("/followed") ? "companies" : "chat");
   const [selectedCompany, setSelectedCompany] = useState(companies[0]);
   const [followedIds, setFollowedIds] = useState(["byd", "longi", "huaneng", "midea", "baosteel", "zijin"]);
   function navigate(next) { setView(next); }
