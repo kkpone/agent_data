@@ -197,3 +197,7 @@
 .alert-rule-table .alert-edit,.alert-rule-table .alert-delete{height:28px;padding:0 7px;flex:0 0 auto}
 .alert-rule-table .alert-switch{justify-self:center}
 @media(min-width:1180px){.alert-rule-table .alert-table-head,.alert-rule-table .alert-table article{grid-template-columns:150px 210px 260px 80px 120px;min-width:860px}}
+/* Keep the rule list content-sized and force rows to use the same columns as the header. */
+.alert-rule-layout.page-layout.list-only{min-height:0}
+.alert-rule-layout.page-layout.list-only .alert-rule-list.alert-rule-table .alert-table article{grid-template-columns:110px 160px 220px 70px 110px;column-gap:10px;min-width:720px}
+@media(min-width:1180px){.alert-rule-layout.page-layout.list-only .alert-rule-list.alert-rule-table .alert-table article{grid-template-columns:150px 210px 260px 80px 120px;min-width:860px}}
